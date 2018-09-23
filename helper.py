@@ -30,8 +30,8 @@ def perturb_image(xs, img):
         pixels = np.split(x, len(x) // 5)
         for pixel in pixels:
             # At each pixel's x,y position, assign its rgb value
-            x_pos, y_pos, *rgb = pixel
-            img[x_pos, y_pos] = rgb
+            x_pos, y_pos, r,g,b = pixel
+            img[x_pos, y_pos] = (r,g,b)
 
     return imgs
 
