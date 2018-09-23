@@ -9,6 +9,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 import requests
 from tqdm import tqdm
+import keras.backend as K
 
 def perturb_image(xs, img):
     # If this function is passed just one perturbation vector,
@@ -31,7 +32,10 @@ def perturb_image(xs, img):
         for pixel in pixels:
             # At each pixel's x,y position, assign its rgb value
             x_pos, y_pos, r,g,b = pixel
-            img[x_pos, y_pos] = (r,g,b)
+            if K.image_dim_ordering() == 'th':
+                img[...,x_pos, y_pos] = (r,g,b)
+            else:
+                img[x_pos, y_pos] = (r,g,b)
 
     return imgs
 
@@ -195,10 +199,10 @@ def load_results():
         targeted = pickle.load(file)
     return untargeted, targeted
 
-def checkpoint(results, targeted=False):
+def checkpoint(results, targeted=False, info=''):
     filename = 'targeted' if targeted else 'untargeted'
 
-    with open('networks/results/' + filename + '_results.pkl', 'wb') as file:
+    with open('networks/results/' + filename + info + '_results.pkl', 'wb') as file:
         pickle.dump(results, file)
 
 def download_from_url(url, dst):
