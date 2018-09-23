@@ -56,6 +56,16 @@ class PixelAttacker:
 
     def attack(self, img, model, target=None, pixel_count=1,
             maxiter=75, popsize=400, verbose=False, plot=False):
+        """
+        @img: index to the image you want to attack
+        @model: the model to attack
+        @target: the index to the target you want to aim for
+        @pixel_count: how many pixels to have in your attack
+        @maxiter: maximum number of iterations on optimization
+        @popsize: size of the population to use at each iteration of the optimization
+        @verbose: boolean, controls printing
+        @plot: boolean, whether to plot the final results
+        """
         # Change the target class based on whether this is a targeted attack or not
         targeted_attack = target is not None
         target_class = target if targeted_attack else self.y_test[img,0]
@@ -95,7 +105,17 @@ class PixelAttacker:
         return [model.name, pixel_count, img, actual_class, predicted_class, success, cdiff, prior_probs, predicted_probs, attack_result.x]
 
     def attack_all(self, models, samples=500, pixels=(1,3,5), targeted=False,
-                maxiter=75, popsize=400, verbose=False):
+                maxiter=75, popsize=400, info='', verbose=False):
+        """
+        @models: list of models to evaluate
+        @samples: how many random samples to take from provided data
+        @pixels: iterable controlling what attack sizes to iterate through
+        @targeted: boolean, whether you want to test targeted attacks or not
+        @maxiter: maximum iterations on the optimization
+        @popsize: population size at each iteration of the optimization
+        @info: string to attach to results pickle filename
+        @verbose: bool, controls printing
+        """
         results = []
         for model in models:
             model_results = []
@@ -118,7 +138,7 @@ class PixelAttacker:
                         model_results.append(result)
 
             results += model_results
-            helper.checkpoint(results, targeted)
+            helper.checkpoint(results, targeted, info)
         return results
 
 
