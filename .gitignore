@@ -106,3 +106,4 @@ networks/models
 !networks/models/lenet.h5
 !networks/models/resnet.h5
 data/*.jpg
+data/*.JPEG
