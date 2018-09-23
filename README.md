@@ -1,3 +1,9 @@
+# PLEASE DONT USE THIS
+This is an attempt to backport this repo to Python 2.7 for an experiment. If you
+need to build a 1-pixel attack against a network use the original repo:
+
+https://github.com/Hyperparticle/one-pixel-attack-keras
+
 # One Pixel Attack
 
 [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md) [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE) [![Gitter chat](https://img.shields.io/badge/chat-on%20gitter-blue.svg)](https://gitter.im/one-pixel-attack-keras/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -81,7 +87,7 @@ Preliminary results after running several experiments on various models. Each ex
 **Attack on 1,3,5 pixel perturbations (100 samples)**
 
 | model              | parameters | test accuracy | pixels | attack success (untargeted)   | attack success (targeted) |
-| ------------------ | ---------- | ------------- | ------ | ----------------------------- | ------------------------- | 
+| ------------------ | ---------- | ------------- | ------ | ----------------------------- | ------------------------- |
 | LeNet              | 62K        | 74.9%         | 1      | 63.0%                         | 34.4%                     |
 |                    |            |               | 3      | 92.0%                         | 64.4%                     |
 |                    |            |               | 5      | 93.0%                         | 64.4%                     |
