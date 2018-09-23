@@ -4,6 +4,8 @@ need to build a 1-pixel attack against a network use the original repo:
 
 https://github.com/Hyperparticle/one-pixel-attack-keras
 
+Installion shenanigans: so far matplotlib 1.5.3 is a strict requirement.
+
 # One Pixel Attack
 
 [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md) [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE) [![Gitter chat](https://img.shields.io/badge/chat-on%20gitter-blue.svg)](https://gitter.im/one-pixel-attack-keras/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
