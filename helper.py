@@ -1,5 +1,6 @@
 # CIFAR - 10
 
+from __future__ import division, print_function, absolute_import
 import pickle
 import numpy as np
 from keras.datasets import cifar10
@@ -14,15 +15,15 @@ def perturb_image(xs, img):
     # pack it in a list to keep the computation the same
     if xs.ndim < 2:
         xs = np.array([xs])
-    
-    # Copy the image n == len(xs) times so that we can 
+
+    # Copy the image n == len(xs) times so that we can
     # create n new perturbed images
     tile = [len(xs)] + [1]*(xs.ndim+1)
     imgs = np.tile(img, tile)
-    
+
     # Make sure to floor the members of xs as int types
     xs = xs.astype(int)
-    
+
     for x,img in zip(xs, imgs):
         # Split x into an array of 5-tuples (perturbation pixels)
         # i.e., [[x,y,r,g,b], ...]
@@ -31,7 +32,7 @@ def perturb_image(xs, img):
             # At each pixel's x,y position, assign its rgb value
             x_pos, y_pos, *rgb = pixel
             img[x_pos, y_pos] = rgb
-    
+
     return imgs
 
 def plot_image(image, label_true=None, class_names=None, label_pred=None):
@@ -58,8 +59,8 @@ def plot_image(image, label_true=None, class_names=None, label_pred=None):
     plt.xticks([]) # Remove ticks from the plot
     plt.yticks([])
     plt.show() # Show the plot
-    
-def plot_images(images, labels_true, class_names, labels_pred=None, 
+
+def plot_images(images, labels_true, class_names, labels_pred=None,
     confidence=None, titles=None):
 
     assert len(images) == len(labels_true)
@@ -73,7 +74,7 @@ def plot_images(images, labels_true, class_names, labels_pred=None,
         hspace += 0.2
     if titles is not None:
         hspace += 0.2
-    
+
     fig.subplots_adjust(hspace=hspace, wspace=0.0)
 
     for i, ax in enumerate(axes.flat):
@@ -81,7 +82,7 @@ def plot_images(images, labels_true, class_names, labels_pred=None,
         if i < len(images):
             # Plot the image
             ax.imshow(images[i])
-            
+
             # Name of the true class
             labels_true_name = class_names[labels_true[i]]
 
@@ -101,18 +102,18 @@ def plot_images(images, labels_true, class_names, labels_pred=None,
 
             if titles is not None:
                 ax.set_title(titles[i])
-        
+
         # Remove ticks from the plot
         ax.set_xticks([])
         ax.set_yticks([])
-    
+
     # Show the plot
     plt.show()
-    
+
 def plot_model(model_details):
     # Create sub-plots
     fig, axs = plt.subplots(1,2,figsize=(15,5))
-    
+
     # Summarize history for accuracy
     axs[0].plot(range(1,len(model_details.history['acc'])+1),model_details.history['acc'])
     axs[0].plot(range(1,len(model_details.history['val_acc'])+1),model_details.history['val_acc'])
@@ -121,7 +122,7 @@ def plot_model(model_details):
     axs[0].set_xlabel('Epoch')
     axs[0].set_xticks(np.arange(1,len(model_details.history['acc'])+1),len(model_details.history['acc'])/10)
     axs[0].legend(['train', 'val'], loc='best')
-    
+
     # Summarize history for loss
     axs[1].plot(range(1,len(model_details.history['loss'])+1),model_details.history['loss'])
     axs[1].plot(range(1,len(model_details.history['val_loss'])+1),model_details.history['val_loss'])
@@ -130,7 +131,7 @@ def plot_model(model_details):
     axs[1].set_xlabel('Epoch')
     axs[1].set_xticks(np.arange(1,len(model_details.history['loss'])+1),len(model_details.history['loss'])/10)
     axs[1].legend(['train', 'val'], loc='best')
-    
+
     # Show the plot
     plt.show()
 
@@ -138,16 +139,16 @@ def visualize_attack(df, class_names):
     _, (x_test, _) = cifar10.load_data()
 
     results = df[df.success].sample(9)
-    
+
     z = zip(results.perturbation, x_test[results.image])
     images = np.array([perturb_image(p, img)[0]
                        for p,img in z])
-     
+
     labels_true = np.array(results.true)
     labels_pred = np.array(results.predicted)
     titles = np.array(results.model)
-    
-    
+
+
     # Plot the first 9 images.
     plot_images(images=images,
                 labels_true=labels_true,
@@ -161,12 +162,12 @@ def attack_stats(df, models, network_stats):
         val_accuracy = np.array(network_stats[network_stats.name == model.name].accuracy)[0]
         m_result = df[df.model == model.name]
         pixels = list(set(m_result.pixels))
-        
+
         for pixel in pixels:
             p_result = m_result[m_result.pixels == pixel]
             success_rate = len(p_result[p_result.success]) / len(p_result)
             stats.append([model.name, val_accuracy, pixel, success_rate])
-            
+
     return pd.DataFrame(stats, columns=['model', 'accuracy', 'pixels', 'attack_success_rate'])
 
 def evaluate_models(models, x_test, y_test):
@@ -174,15 +175,15 @@ def evaluate_models(models, x_test, y_test):
     network_stats = []
     for model in models:
         print('Evaluating', model.name)
-        
+
         predictions = model.predict(x_test)
-        
+
         correct = [[model.name,i,label,np.max(pred),pred]
                 for i,(label,pred)
                 in enumerate(zip(y_test[:,0],predictions))
                 if label == np.argmax(pred)]
         accuracy = len(correct) / len(x_test)
-        
+
         correct_imgs += correct
         network_stats += [[model.name, accuracy, model.count_params()]]
     return network_stats, correct_imgs

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+from __future__ import division, print_function, absolute_import
 
 import argparse
 
@@ -45,8 +45,8 @@ class PixelAttacker:
 
         confidence = model.predict(attack_image)[0]
         predicted_class = np.argmax(confidence)
-        
-        # If the prediction is what we want (misclassification or 
+
+        # If the prediction is what we want (misclassification or
         # targeted classification), return True
         if (verbose):
             print('Confidence:', confidence[target_class])
@@ -54,26 +54,26 @@ class PixelAttacker:
             (not targeted_attack and predicted_class != target_class)):
             return True
 
-    def attack(self, img, model, target=None, pixel_count=1, 
+    def attack(self, img, model, target=None, pixel_count=1,
             maxiter=75, popsize=400, verbose=False, plot=False):
         # Change the target class based on whether this is a targeted attack or not
         targeted_attack = target is not None
         target_class = target if targeted_attack else self.y_test[img,0]
-        
+
         # Define bounds for a flat vector of x,y,r,g,b values
         # For more pixels, repeat this layout
         dim_x, dim_y = self.dimensions
         bounds = [(0,dim_x), (0,dim_y), (0,256), (0,256), (0,256)] * pixel_count
-        
+
         # Population multiplier, in terms of the size of the perturbation vector x
         popmul = max(1, popsize // len(bounds))
-        
+
         # Format the predict/callback functions for the differential evolution algorithm
         predict_fn = lambda xs: self.predict_classes(
             xs, self.x_test[img], target_class, model, target is None)
         callback_fn = lambda x, convergence: self.attack_success(
             x, self.x_test[img], target_class, model, targeted_attack, verbose)
-        
+
         # Call Scipy's Implementation of Differential Evolution
         attack_result = differential_evolution(
             predict_fn, bounds, maxiter=maxiter, popsize=popmul,
@@ -94,7 +94,7 @@ class PixelAttacker:
 
         return [model.name, pixel_count, img, actual_class, predicted_class, success, cdiff, prior_probs, predicted_probs, attack_result.x]
 
-    def attack_all(self, models, samples=500, pixels=(1,3,5), targeted=False, 
+    def attack_all(self, models, samples=500, pixels=(1,3,5), targeted=False,
                 maxiter=75, popsize=400, verbose=False):
         results = []
         for model in models:
@@ -106,24 +106,24 @@ class PixelAttacker:
                 for i,img in enumerate(img_samples):
                     print(model.name, '- image', img, '-', i+1, '/', len(img_samples))
                     targets = [None] if not targeted else range(10)
-                    
+
                     for target in targets:
                         if (targeted):
                             print('Attacking with target', class_names[target])
                             if (target == self.y_test[img,0]):
                                 continue
-                        result = self.attack(img, model, target, pixel_count, 
-                                        maxiter=maxiter, popsize=popsize, 
+                        result = self.attack(img, model, target, pixel_count,
+                                        maxiter=maxiter, popsize=popsize,
                                         verbose=verbose)
                         model_results.append(result)
-                        
+
             results += model_results
             helper.checkpoint(results, targeted)
         return results
 
 
 if __name__ == '__main__':
-    model_defs = { 
+    model_defs = {
         'lenet': LeNet,
         'pure_cnn': PureCnn,
         'net_in_net': NetworkInNetwork,

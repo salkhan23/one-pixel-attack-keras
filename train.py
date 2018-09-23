@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-
+from __future__ import division, print_function, absolute_import
 import os
 import argparse
 
@@ -13,7 +12,7 @@ from networks.capsnet import CapsNet
 
 
 if __name__ == '__main__':
-    models = { 
+    models = {
         'lenet': LeNet,
         'pure_cnn': PureCnn,
         'net_in_net': NetworkInNetwork,
