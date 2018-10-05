@@ -87,7 +87,7 @@ class PixelAttacker:
         # Call Scipy's Implementation of Differential Evolution
         attack_result = differential_evolution(
             predict_fn, bounds, maxiter=maxiter, popsize=popmul,
-            recombination=0.7, callback=callback_fn, polish=False, mutation=0.5)
+            recombination=1, atol=-1, callback=callback_fn, polish=False)
 
         # Calculate some useful statistics to return from this function
         attack_image = helper.perturb_image(attack_result.x, self.x_test[img])[0]

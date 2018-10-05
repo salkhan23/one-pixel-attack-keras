@@ -87,10 +87,10 @@ if __name__ == '__main__':
     # -----------------------------------------------------------------------------------
     # Single Image Attack
     # -----------------------------------------------------------------------------------
-    target_img_idx = 100
+    target_img_idx = 101
 
     start_time = datetime.now()
-    result = attacker.attack(target_img_idx, model, maxiter=1000, verbose=True)
+    result = attacker.attack(target_img_idx, model, maxiter=100, verbose=True)
     print("Processing took {}".format(datetime.now() - start_time))
 
     # Decode the Results
