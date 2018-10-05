@@ -12,6 +12,7 @@ import keras
 from keras import backend as K
 from keras.preprocessing.image import load_img, img_to_array
 from keras.applications.imagenet_utils import decode_predictions, preprocess_input
+from datetime import datetime
 
 from keras.applications.mobilenet import decode_predictions as mobilenet_decode_predictions
 from keras.applications.mobilenet import preprocess_input as mobilenet_preprocess_input
@@ -73,8 +74,62 @@ if __name__ == '__main__':
 
     correct_imgs = pd.DataFrame(correct_imgs, columns=['name', 'img', 'label', 'confidence', 'pred'])
     network_stats = pd.DataFrame(network_stats, columns=['name', 'accuracy', 'param_count'])
+    print(network_stats)
 
-    network_stats
+    # Set up the attacker
+    models = [model]
+
+    # The data set we will try to attack
+    test_tuple = (processed_images, labels)
+
+    attacker = PixelAttacker(models, test_tuple, class_names, dimensions=(224, 224))
+
+    # -----------------------------------------------------------------------------------
+    # Single Image Attack
+    # -----------------------------------------------------------------------------------
+    target_img_idx = 100
+
+    start_time = datetime.now()
+    result = attacker.attack(target_img_idx, model, maxiter=75, verbose=True)
+    print("Processing took {}".format(datetime.now() - start_time))
+
+    # Decode the Results
+    print("Was Attack successful {}. Modified pixel {}".format(result[5], result[-1]))
+    print("True Class ({}:{}), Final Predicted class ({}:{})".format(
+        result[3], class_names[result[3]], result[4], class_names[result[4]]))
+    print("Drop in confidence in true class {}".format(result[6]))
+
+    # Show the difference between start and stop image
+    changed_pixel = result[-1]
+    attack_image = helper.perturb_image(changed_pixel, processed_images[target_img_idx, ])[0]
+
+    true_class = labels[target_img_idx, 0]
+
+    prior_confidence = model.predict(np.expand_dims(processed_images[target_img_idx,], axis=0))[0][true_class]
+    post_confidence = model.predict(np.expand_dims(attack_image, axis=0))[0][true_class]
+
+    success = attacker.attack_success(
+        changed_pixel, processed_images[target_img_idx,], true_class, model, verbose=True)
+
+    print('Prior confidence {}, After Attack confidence {}. Attack was successful {}'.format(
+        prior_confidence, post_confidence, success))
+
+
+    plt.figure()
+    plt.imshow(attack_image)
+    plt.title("Attack Image Raw")
+
+    plt.figure()
+    new_image = (attack_image - attack_image.min()) / (attack_image.max() - attack_image.min()) * 255.0
+    helper.plot_image(new_image)
+
+
+
+
+
+
+
+
 
 
 
