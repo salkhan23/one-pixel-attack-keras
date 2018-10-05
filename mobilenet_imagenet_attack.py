@@ -65,9 +65,9 @@ if __name__ == '__main__':
     print("Processed Images shape {}, min {}, max {}".format(
         processed_images.shape, np.min(processed_images), np.max(processed_images)))
 
-    # -----------------------------------------------------------------------------------
-    # Model Accuracy
-    # -----------------------------------------------------------------------------------
+    # # -----------------------------------------------------------------------------------
+    # # Model Accuracy
+    # # -----------------------------------------------------------------------------------
     models = [model]
 
     network_stats, correct_imgs = helper.evaluate_models(models, processed_images, labels)
@@ -123,14 +123,22 @@ if __name__ == '__main__':
     # new_image = (attack_image - attack_image.min()) / (attack_image.max() - attack_image.min()) * 255.0
     # helper.plot_image(new_image)
 
+    # -------------------------------------------------------------------------------------------------
+    # Attack Evaluation
+    # --------------------------------------------------------------------------------------------------
+    print ("Starting Full attack ...")
 
+    # The full attack
+    start_time = datetime.now()
+    untargeted = attacker.attack_all(models, samples=50, targeted=False)
+    print("Processing took {}".format(datetime.now() - start_time))
 
+    # Load the results
+    untargeted = helper.load_results()
 
+    columns = ['model', 'pixels', 'image', 'true', 'predicted', 'success', 'cdiff', 'prior_probs', 'predicted_probs',
+               'perturbation']
 
+    untargeted_results = pd.DataFrame(untargeted, columns=columns)
 
-
-
-
-
-
-
+    helper.attack_stats(untargeted_results, models, network_stats)

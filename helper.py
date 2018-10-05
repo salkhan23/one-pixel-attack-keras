@@ -195,9 +195,9 @@ def evaluate_models(models, x_test, y_test):
 def load_results():
     with open('networks/results/untargeted_results.pkl', 'rb') as file:
         untargeted = pickle.load(file)
-    with open('networks/results/targeted_results.pkl', 'rb') as file:
-        targeted = pickle.load(file)
-    return untargeted, targeted
+    # with open('networks/results/targeted_results.pkl', 'rb') as file:
+    #     targeted = pickle.load(file)
+    return untargeted #, targeted
 
 def checkpoint(results, targeted=False, info=''):
     filename = 'targeted' if targeted else 'untargeted'
