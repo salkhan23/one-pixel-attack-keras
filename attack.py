@@ -21,20 +21,21 @@ from differential_evolution import differential_evolution
 import helper
 
 class PixelAttacker:
-    def __init__(self, models, data, class_names, dimensions=(32, 32)):
+    def __init__(self, models, data, class_names, dimensions=(32, 32), preprocessing_cb=None):
         # Load data and model
         self.models = models
         self.x_test, self.y_test = data
         self.class_names = class_names
         self.dimensions = dimensions
 
-        network_stats, correct_imgs = helper.evaluate_models(self.models, self.x_test, self.y_test)
+        network_stats, correct_imgs = helper.evaluate_models(
+            self.models, self.x_test, self.y_test, preprocessing_cb=preprocessing_cb)
         self.correct_imgs = pd.DataFrame(correct_imgs, columns=['name', 'img', 'label', 'confidence', 'pred'])
         self.network_stats = pd.DataFrame(network_stats, columns=['name', 'accuracy', 'param_count'])
 
     def predict_classes(self, xs, img, target_class, model, minimize=True, preprocessing_cb=None):
         # Perturb the image with the given pixel(s) x and get the prediction of the model
-        imgs_perturbed = helper.perturb_image(xs, img)
+        imgs_perturbed = helper.perturb_image(xs, img.copy())
 
         if preprocessing_cb is not None:
             imgs_perturbed = preprocessing_cb(imgs_perturbed)
@@ -45,7 +46,7 @@ class PixelAttacker:
 
     def attack_success(self, x, img, target_class, model, targeted_attack=False, verbose=False, preprocessing_cb=None):
         # Perturb the image with the given pixel(s) and get the prediction of the model
-        attack_image = helper.perturb_image(x, img)
+        attack_image = helper.perturb_image(x, img.copy())
 
         if preprocessing_cb is not None:
             attack_image = preprocessing_cb(attack_image)
@@ -97,13 +98,13 @@ class PixelAttacker:
             recombination=1, atol=-1, callback=callback_fn, polish=False)
 
         # Calculate some useful statistics to return from this function
-        attack_image = helper.perturb_image(attack_result.x, self.x_test[img])[0]
+        attack_image = helper.perturb_image(attack_result.x, self.x_test[img].copy())[0]
 
         if preprocessing_cb is not None:
-            original_img = preprocessing_cb(self.x_test[img])
-            attack_image = preprocessing_cb(attack_image)
+            original_img = preprocessing_cb(self.x_test[img].copy())
+            attack_image = preprocessing_cb(attack_image.copy())
         else:
-            original_img = self.x_test[img]
+            original_img = self.x_test[img].copy()
 
         prior_probs = model.predict(np.array([original_img]))[0]
         predicted_probs = model.predict(np.array([attack_image]))[0]
@@ -119,7 +120,7 @@ class PixelAttacker:
         return [model.name, pixel_count, img, actual_class, predicted_class, success, cdiff, prior_probs, predicted_probs, attack_result.x]
 
     def attack_all(self, models, samples=500, pixels=(1,3,5), targeted=False,
-                maxiter=75, popsize=400, info='', verbose=False):
+                maxiter=75, popsize=400, info='', verbose=False, preprocessing_cb=None):
         """
         @models: list of models to evaluate
         @samples: how many random samples to take from provided data
@@ -148,7 +149,7 @@ class PixelAttacker:
                                 continue
                         result = self.attack(img, model, target, pixel_count,
                                         maxiter=maxiter, popsize=popsize,
-                                        verbose=verbose)
+                                        verbose=verbose, preprocessing_cb=preprocessing_cb)
                         model_results.append(result)
 
             results += model_results

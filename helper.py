@@ -182,8 +182,11 @@ def evaluate_models(models, x_test, y_test, preprocessing_cb=None):
         print('Evaluating', model.name)
 
         if preprocessing_cb is not None:
-            x_test = preprocessing_cb(x_test)
-        predictions = model.predict(x_test)
+            preprocessed_x_test = preprocessing_cb(x_test.copy())
+        else:
+            preprocessed_x_test = x_test.copy()
+
+        predictions = model.predict(preprocessed_x_test)
 
         correct = [[model.name, i, label, np.max(pred), pred]
                 for i, (label, pred) in enumerate(zip(y_test[:, 0], predictions)) if label == np.argmax(pred)]
