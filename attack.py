@@ -100,7 +100,7 @@ class PixelAttacker:
         attack_image = helper.perturb_image(attack_result.x, self.x_test[img])[0]
 
         if preprocessing_cb is not None:
-            orginal_img = preprocessing_cb(self.x_test[img])
+            original_img = preprocessing_cb(self.x_test[img])
             attack_image = preprocessing_cb(attack_image)
         else:
             original_img = self.x_test[img]
