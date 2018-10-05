@@ -73,7 +73,7 @@ class PixelAttacker:
         # Define bounds for a flat vector of x,y,r,g,b values
         # For more pixels, repeat this layout
         dim_x, dim_y = self.dimensions
-        bounds = [(0,dim_x), (0,dim_y), (0,256), (0,256), (0,256)] * pixel_count
+        bounds = [(0,dim_x), (0,dim_y), (-1., 1.), (-1., 1.), (-1., 1.)] * pixel_count
 
         # Population multiplier, in terms of the size of the perturbation vector x
         popmul = max(1, popsize // len(bounds))
