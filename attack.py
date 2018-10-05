@@ -32,16 +32,23 @@ class PixelAttacker:
         self.correct_imgs = pd.DataFrame(correct_imgs, columns=['name', 'img', 'label', 'confidence', 'pred'])
         self.network_stats = pd.DataFrame(network_stats, columns=['name', 'accuracy', 'param_count'])
 
-    def predict_classes(self, xs, img, target_class, model, minimize=True):
+    def predict_classes(self, xs, img, target_class, model, minimize=True, preprocessing_cb=None):
         # Perturb the image with the given pixel(s) x and get the prediction of the model
         imgs_perturbed = helper.perturb_image(xs, img)
-        predictions = model.predict(imgs_perturbed)[:,target_class]
+
+        if preprocessing_cb is not None:
+            imgs_perturbed = preprocessing_cb(imgs_perturbed)
+        predictions = model.predict(imgs_perturbed)[:, target_class]
+
         # This function should always be minimized, so return its complement if needed
         return predictions if minimize else 1 - predictions
 
-    def attack_success(self, x, img, target_class, model, targeted_attack=False, verbose=False):
+    def attack_success(self, x, img, target_class, model, targeted_attack=False, verbose=False, preprocessing_cb=None):
         # Perturb the image with the given pixel(s) and get the prediction of the model
         attack_image = helper.perturb_image(x, img)
+
+        if preprocessing_cb is not None:
+            attack_image = preprocessing_cb(attack_image)
 
         confidence = model.predict(attack_image)[0]
         predicted_class = np.argmax(confidence)
@@ -55,7 +62,7 @@ class PixelAttacker:
             return True
 
     def attack(self, img, model, target=None, pixel_count=1,
-            maxiter=75, popsize=400, verbose=False, plot=False):
+            maxiter=75, popsize=400, verbose=False, plot=False, preprocessing_cb=None):
         """
         @img: index to the image you want to attack
         @model: the model to attack
@@ -68,7 +75,7 @@ class PixelAttacker:
         """
         # Change the target class based on whether this is a targeted attack or not
         targeted_attack = target is not None
-        target_class = target if targeted_attack else self.y_test[img,0]
+        target_class = target if targeted_attack else self.y_test[img, 0]
 
         # Define bounds for a flat vector of x,y,r,g,b values
         # For more pixels, repeat this layout
@@ -80,9 +87,9 @@ class PixelAttacker:
 
         # Format the predict/callback functions for the differential evolution algorithm
         predict_fn = lambda xs: self.predict_classes(
-            xs, self.x_test[img], target_class, model, target is None)
+            xs, self.x_test[img], target_class, model, target is None, preprocessing_cb=preprocessing_cb)
         callback_fn = lambda x, convergence: self.attack_success(
-            x, self.x_test[img], target_class, model, targeted_attack, verbose)
+            x, self.x_test[img], target_class, model, targeted_attack, verbose, preprocessing_cb=preprocessing_cb)
 
         # Call Scipy's Implementation of Differential Evolution
         attack_result = differential_evolution(
@@ -91,10 +98,17 @@ class PixelAttacker:
 
         # Calculate some useful statistics to return from this function
         attack_image = helper.perturb_image(attack_result.x, self.x_test[img])[0]
-        prior_probs = model.predict(np.array([self.x_test[img]]))[0]
+
+        if preprocessing_cb is not None:
+            orginal_img = preprocessing_cb(self.x_test[img])
+            attack_image = preprocessing_cb(attack_image)
+        else:
+            original_img = self.x_test[img]
+
+        prior_probs = model.predict(np.array([original_img]))[0]
         predicted_probs = model.predict(np.array([attack_image]))[0]
         predicted_class = np.argmax(predicted_probs)
-        actual_class = self.y_test[img,0]
+        actual_class = self.y_test[img, 0]
         success = predicted_class != actual_class
         cdiff = prior_probs[actual_class] - predicted_probs[actual_class]
 
