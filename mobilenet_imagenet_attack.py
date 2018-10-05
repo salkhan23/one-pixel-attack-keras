@@ -61,7 +61,8 @@ if __name__ == '__main__':
     # Normalize ImageNet Images
     # processed_images = preprocess_input(images.copy(), data_format='channels_last')
     # It is important to use the correct preprocessing function for the model
-    processed_images = mobilenet_preprocess_input(images.copy())
+    # processed_images = mobilenet_preprocess_input(images.copy())
+    processed_images = images.copy()
 
     print("Processed Images shape {}, min {}, max {}".format(
         processed_images.shape, np.min(processed_images), np.max(processed_images)))
@@ -72,12 +73,17 @@ if __name__ == '__main__':
     print("Evaluating Model Accuracy - Regular Images")
     models = [model]
 
-    network_stats, correct_imgs = helper.evaluate_models(models, processed_images, labels)
+    network_stats, correct_imgs = helper.evaluate_models(
+        models,
+        processed_images,
+        labels,
+        preprocessing_cb=mobilenet_preprocess_input
+    )
 
     correct_imgs = pd.DataFrame(correct_imgs, columns=['name', 'img', 'label', 'confidence', 'pred'])
     network_stats = pd.DataFrame(network_stats, columns=['name', 'accuracy', 'param_count'])
     print(network_stats)
-    
+
     # # -----------------------------------------------------------------------------------
     # #  Adverserial Attacks
     # # -----------------------------------------------------------------------------------
