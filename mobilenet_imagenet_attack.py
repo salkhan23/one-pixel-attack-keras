@@ -115,13 +115,13 @@ if __name__ == '__main__':
         prior_confidence, post_confidence, success))
 
 
-    plt.figure()
-    plt.imshow(attack_image)
-    plt.title("Attack Image Raw")
-
-    plt.figure()
-    new_image = (attack_image - attack_image.min()) / (attack_image.max() - attack_image.min()) * 255.0
-    helper.plot_image(new_image)
+    # plt.figure()
+    # plt.imshow(attack_image)
+    # plt.title("Attack Image Raw")
+    #
+    # plt.figure()
+    # new_image = (attack_image - attack_image.min()) / (attack_image.max() - attack_image.min()) * 255.0
+    # helper.plot_image(new_image)
 
 
 
