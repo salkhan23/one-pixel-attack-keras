@@ -56,7 +56,7 @@ class PixelAttacker:
         # If the prediction is what we want (misclassification or
         # targeted classification), return True
         if (verbose):
-            print('Confidence:', confidence[target_class])
+            print('Confidence {}: x={}'.format(confidence[target_class], x))
         if ((targeted_attack and predicted_class == target_class) or
             (not targeted_attack and predicted_class != target_class)):
             return True
@@ -80,7 +80,7 @@ class PixelAttacker:
         # Define bounds for a flat vector of x,y,r,g,b values
         # For more pixels, repeat this layout
         dim_x, dim_y = self.dimensions
-        bounds = [(0,dim_x), (0,dim_y), (-1., 1.), (-1., 1.), (-1., 1.)] * pixel_count
+        bounds = [(0,dim_x), (0,dim_y), (0, 255), (0, 255), (0., 255)] * pixel_count
 
         # Population multiplier, in terms of the size of the perturbation vector x
         popmul = max(1, popsize // len(bounds))
