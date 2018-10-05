@@ -174,18 +174,19 @@ def attack_stats(df, models, network_stats):
 
     return pd.DataFrame(stats, columns=['model', 'accuracy', 'pixels', 'attack_success_rate'])
 
-def evaluate_models(models, x_test, y_test):
+
+def evaluate_models(models, x_test, y_test, preprocessing_cb=None):
     correct_imgs = []
     network_stats = []
     for model in models:
         print('Evaluating', model.name)
 
-        predictions = model.predict(x_test)
+        if preprocessing_cb is not None:
+            x_test_preprocessed = preprocessing_cb(x_test)
+        predictions = model.predict(x_test_preprocessed)
 
-        correct = [[model.name,i,label,np.max(pred),pred]
-                for i,(label,pred)
-                in enumerate(zip(y_test[:,0],predictions))
-                if label == np.argmax(pred)]
+        correct = [[model.name, i, label, np.max(pred), pred]
+                for i, (label, pred) in enumerate(zip(y_test[:, 0], predictions)) if label == np.argmax(pred)]
         accuracy = len(correct) / len(x_test)
 
         correct_imgs += correct
