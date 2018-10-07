@@ -108,7 +108,7 @@ if __name__ == '__main__':
     # First Verify Model predicts the correct label80
     print("For Image @ index {}, True label {}".format(target_img_idx, names[target_img_idx]))
 
-    preprocessed_tgt_image = mobilenet_preprocess_input(processed_images[target_img_idx,].copy())
+    preprocessed_tgt_image = mobilenet_preprocess_input(processed_images[target_img_idx, ].copy())
     prediction = model.predict(np.expand_dims(preprocessed_tgt_image, axis=0))
     # helper.plot_image(images[target_img_idx,])
 
@@ -118,7 +118,7 @@ if __name__ == '__main__':
         print(item)
 
     # Change one pixel
-    changed_pixel = np.array([200,100, 255,0, 255])
+    changed_pixel = np.array([200, 100, 255, 0, 255])
     attack_image = helper.perturb_image(
         changed_pixel,
         processed_images[target_img_idx, ].copy())[0]
@@ -136,6 +136,7 @@ if __name__ == '__main__':
     # -----------------------------------------------------------------------------------
     print("Single Image Attack ...")
     start_time = datetime.now()
+
     result = attacker.attack(
         target_img_idx,
         model,
@@ -160,7 +161,8 @@ if __name__ == '__main__':
 
     true_class = labels[target_img_idx, 0]
 
-    preprocessed_original_image = mobilenet_preprocess_input(processed_images[target_img_idx,].copy())
+    preprocessed_original_image = mobilenet_preprocess_input(
+        processed_images[target_img_idx, ].copy())
     preprocessed__attack_image = mobilenet_preprocess_input(attack_image.copy())
 
     prior_confidence = model.predict(
@@ -174,31 +176,39 @@ if __name__ == '__main__':
     print('Prior confidence {}, After Attack confidence {}. Attack was successful {}'.format(
         prior_confidence, post_confidence, success))
 
+    # plt.figure()
+    # plt.imshow(attack_image)
+    # plt.title("Attack Image Raw")
 
-   # plt.figure()
-   # plt.imshow(attack_image)
-   # plt.title("Attack Image Raw")
+    # plt.figure()
+    # new_image = (attack_image - attack_image.min()) /
+    #  (attack_image.max() - attack_image.min()) * 255.0
+    # helper.plot_image(new_image)
 
-    #plt.figure()
-    new_image = (attack_image - attack_image.min()) / (attack_image.max() - attack_image.min()) * 255.0
-    #helper.plot_image(new_image)
-
-    # -------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------
     # Attack Evaluation
-    # --------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------
     print ("Starting Full attack ...")
 
     # The full attack
     start_time = datetime.now()
-    untargeted = attacker.attack_all(models, samples=300, targeted=False, pixels=[1],preprocessing_cb=mobilenet_preprocess_input )
+
+    untargeted_full_attack_results = attacker.attack_all(
+        models,
+        samples=300,
+        targeted=False,
+        pixels=[1],
+        preprocessing_cb=mobilenet_preprocess_input
+    )
+
     print("Processing took {}".format(datetime.now() - start_time))
 
     # Load the results
     untargeted = helper.load_results()
 
-    columns = ['model', 'pixels', 'image', 'true', 'predicted', 'success', 'cdiff', 'prior_probs', 'predicted_probs',
-               'perturbation']
+    columns = ['model', 'pixels', 'image', 'true', 'predicted', 'success', 'cdiff',
+               'prior_probs', 'predicted_probs', 'perturbation']
 
     untargeted_results = pd.DataFrame(untargeted, columns=columns)
 
-    helper.attack_stats(untargeted_results, models, network_stats)
+    print(helper.attack_stats(untargeted_results, models, network_stats))
