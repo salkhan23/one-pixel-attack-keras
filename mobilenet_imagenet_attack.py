@@ -110,7 +110,7 @@ if __name__ == '__main__':
 
     preprocessed_tgt_image = mobilenet_preprocess_input(processed_images[target_img_idx,].copy())
     prediction = model.predict(np.expand_dims(preprocessed_tgt_image, axis=0))
-    helper.plot_image(images[target_img_idx,])
+    # helper.plot_image(images[target_img_idx,])
 
     print("Model predictions")
     predictions = mobilenet_decode_predictions(prediction)[0]
@@ -175,13 +175,13 @@ if __name__ == '__main__':
         prior_confidence, post_confidence, success))
 
 
-    plt.figure()
-    plt.imshow(attack_image)
-    plt.title("Attack Image Raw")
+   # plt.figure()
+   # plt.imshow(attack_image)
+   # plt.title("Attack Image Raw")
 
-    plt.figure()
+    #plt.figure()
     new_image = (attack_image - attack_image.min()) / (attack_image.max() - attack_image.min()) * 255.0
-    helper.plot_image(new_image)
+    #helper.plot_image(new_image)
 
     # -------------------------------------------------------------------------------------------------
     # Attack Evaluation
@@ -190,7 +190,7 @@ if __name__ == '__main__':
 
     # The full attack
     start_time = datetime.now()
-    untargeted = attacker.attack_all(models, samples=300, targeted=False, pixels=[1], )
+    untargeted = attacker.attack_all(models, samples=300, targeted=False, pixels=[1],preprocessing_cb=mobilenet_preprocess_input )
     print("Processing took {}".format(datetime.now() - start_time))
 
     # Load the results
