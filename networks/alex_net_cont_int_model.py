@@ -21,7 +21,8 @@ from keras.models import Model
 
 from networks import alex_net
 
-reload(alex_net)
+# reload(alex_net)
+
 
 class ContourGainCalculatorLayer(Layer):
     def __init__(self, tgt_filt_idx, **kwargs):
