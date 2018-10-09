@@ -97,6 +97,7 @@ if __name__ == '__main__':
     models = [model]
 
     test_tuple = (images.copy(), labels)
+
     attacker = PixelAttacker(
         models,
         test_tuple,
