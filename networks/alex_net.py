@@ -106,34 +106,34 @@ def alex_net(weights_path):
     conv_2 = crosschannelnormalization(name='Contrast_Normalization')(conv_2)
     conv_2 = ZeroPadding2D((2, 2))(conv_2)
 
-    conv_2_1 = Conv2D(128, (5, 5), activation='relu', name='conv_2_1')(splittensor(ratio_split=2, id_split=0)(conv_2))
-    conv_2_2 = Conv2D(128, (5, 5), activation='relu', name='conv_2_2')(splittensor(ratio_split=2, id_split=1)(conv_2))
+    conv_2_1 = Conv2D(128, (5, 5), activation='relu', name='conv_22_1')(splittensor(ratio_split=2, id_split=0)(conv_2))
+    conv_2_2 = Conv2D(128, (5, 5), activation='relu', name='conv_22_2')(splittensor(ratio_split=2, id_split=1)(conv_2))
     conv_2 = Concatenate(axis=1, name='conv_2')([conv_2_1, conv_2_2])
 
     conv_3 = MaxPooling2D((3, 3), strides=(2, 2))(conv_2)
     conv_3 = crosschannelnormalization()(conv_3)
     conv_3 = ZeroPadding2D((1, 1))(conv_3)
-    conv_3 = Conv2D(384, (3, 3), activation='relu', name='conv_3')(conv_3)
+    conv_3 = Conv2D(384, (3, 3), activation='relu', name='conv_33')(conv_3)
 
     conv_4 = ZeroPadding2D((1, 1))(conv_3)
-    conv_4_1 = Conv2D(192, (3, 3), activation='relu', name='conv_4_1')(splittensor(ratio_split=2, id_split=0)(conv_4))
-    conv_4_2 = Conv2D(192, (3, 3), activation='relu', name='conv_4_2')(splittensor(ratio_split=2, id_split=1)(conv_4))
+    conv_4_1 = Conv2D(192, (3, 3), activation='relu', name='conv_44_1')(splittensor(ratio_split=2, id_split=0)(conv_4))
+    conv_4_2 = Conv2D(192, (3, 3), activation='relu', name='conv_44_2')(splittensor(ratio_split=2, id_split=1)(conv_4))
     conv_4 = Concatenate(axis=1, name='conv_4')([conv_4_1, conv_4_2])
 
     conv_5 = ZeroPadding2D((1, 1))(conv_4)
-    conv_5_1 = Conv2D(128, (3, 3), activation='relu', name='conv_5_1')(splittensor(ratio_split=2, id_split=0)(conv_5))
-    conv_5_2 = Conv2D(128, (3, 3), activation='relu', name='conv_5_2')(splittensor(ratio_split=2, id_split=1)(conv_5))
+    conv_5_1 = Conv2D(128, (3, 3), activation='relu', name='conv_55_1')(splittensor(ratio_split=2, id_split=0)(conv_5))
+    conv_5_2 = Conv2D(128, (3, 3), activation='relu', name='conv_55_2')(splittensor(ratio_split=2, id_split=1)(conv_5))
     conv_5 = Concatenate(axis=1, name='conv_5')([conv_5_1, conv_5_2])
 
     dense_1 = MaxPooling2D((3, 3), strides=(2, 2), name='convpool_5')(conv_5)
     dense_1 = Flatten(name='flatten')(dense_1)
-    dense_1 = Dense(4096, activation='relu', name='dense_1')(dense_1)
+    dense_1 = Dense(4096, activation='relu', name='dense_11')(dense_1)
 
     dense_2 = Dropout(0.5)(dense_1)
-    dense_2 = Dense(4096, activation='relu', name='dense_2')(dense_2)
+    dense_2 = Dense(4096, activation='relu', name='dense_22')(dense_2)
 
     dense_3 = Dropout(0.5)(dense_2)
-    dense_3 = Dense(1000, name='dense_3')(dense_3)
+    dense_3 = Dense(1000, name='dense_33')(dense_3)
     prediction = Activation('softmax', name='softmax')(dense_3)
 
     model = Model(inputs=inputs, outputs=prediction)
