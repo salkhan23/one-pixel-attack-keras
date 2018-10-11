@@ -44,7 +44,7 @@ if __name__ == '__main__':
     # -----------------------------------------------------------------------------------
     print("Loading model and weights ...")
 
-    weights_file = "./networks/models/trained_alexnet_weights.hf"
+    weights_file = "./networks/models/partially_trained_alexnet_weights.hf"
 
     model = alex_net.alex_net(weights_path=weights_file)
 
