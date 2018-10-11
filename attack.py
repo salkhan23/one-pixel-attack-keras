@@ -153,8 +153,8 @@ class PixelAttacker:
                         model_results.append(result)
 
             results += model_results
-            helper.checkpoint(results, targeted, info)
-        return results
+            file_name = helper.checkpoint(results, targeted, info)
+        return results, file_name
 
 
 if __name__ == '__main__':

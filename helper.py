@@ -196,8 +196,12 @@ def evaluate_models(models, x_test, y_test, preprocessing_cb=None):
         network_stats += [[model.name, accuracy, model.count_params()]]
     return network_stats, correct_imgs
 
-def load_results():
-    with open('networks/results/untargeted_results.pkl', 'rb') as file:
+def load_results(filename=None):
+
+    if filename is None:
+        filename = 'networks/results/untargeted_results.pkl'
+
+    with open(filename, 'rb') as file:
         untargeted = pickle.load(file)
     # with open('networks/results/targeted_results.pkl', 'rb') as file:
     #     targeted = pickle.load(file)
@@ -205,9 +209,12 @@ def load_results():
 
 def checkpoint(results, targeted=False, info=''):
     filename = 'targeted' if targeted else 'untargeted'
+    full_filename = 'networks/results/' + filename + info + '_results.pkl'
 
     with open('networks/results/' + filename + info + '_results.pkl', 'wb') as file:
         pickle.dump(results, file)
+
+    return full_filename
 
 def download_from_url(url, dst):
     """

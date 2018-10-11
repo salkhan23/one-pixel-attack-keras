@@ -20,7 +20,7 @@ import helper
 from attack import PixelAttacker
 
 # IMAGES_DIR = './data/sample_images/'
-IMAGES_DIR = './data/sample_images_2/'
+IMAGES_DIR = './data/sample_images_3/'
 
 
 def preprocessing_function(x):
@@ -123,18 +123,19 @@ if __name__ == '__main__':
 
     start_time = datetime.now()
 
-    untargeted_full_attack_results = attacker.attack_all(
+    untargeted_full_attack_results, results_file = attacker.attack_all(
         models,
         samples=300,
         targeted=False,
         pixels=[1],
-        preprocessing_cb=preprocessing_function
+        preprocessing_cb=preprocessing_function,
+        info='_alexnet_' + IMAGES_DIR.split('/')[-2]
     )
 
     print("Processing took {}".format(datetime.now() - start_time))
 
     # Load the results
-    untargeted = helper.load_results()
+    untargeted = helper.load_results(results_file)
 
     columns = ['model', 'pixels', 'image', 'true', 'predicted', 'success', 'cdiff',
                'prior_probs', 'predicted_probs', 'perturbation']
@@ -142,3 +143,6 @@ if __name__ == '__main__':
     untargeted_results = pd.DataFrame(untargeted, columns=columns)
 
     print(helper.attack_stats(untargeted_results, models, network_stats))
+    per_image_success = [result[5] for result in untargeted]
+    print("{} images were successfully attacked out of {}".format(
+        np.count_nonzero(per_image_success), len(per_image_success)))
