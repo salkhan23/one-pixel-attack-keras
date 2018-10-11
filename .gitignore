@@ -107,3 +107,12 @@ networks/models
 !networks/models/resnet.h5
 data/*.jpg
 data/*.JPEG
+
+
+PyCharm MetaData
+#---------------------
+.idea
+
+# ignore all files in the data directory
+# --------------------------------------
+data/*
