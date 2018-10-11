@@ -19,6 +19,9 @@ from keras.applications.imagenet_utils import decode_predictions, preprocess_inp
 import helper
 from attack import PixelAttacker
 
+# IMAGES_DIR = './data/sample_images/'
+IMAGES_DIR = './data/sample_images_2/'
+
 
 def preprocessing_function(x):
     """
@@ -41,7 +44,7 @@ if __name__ == '__main__':
     # -----------------------------------------------------------------------------------
     print("Loading model and weights ...")
 
-    weights_file = "./networks/models/partially_trained_cont_int_model_weights.hf"
+    weights_file = "./networks/models/trained_cont_int_model_weights.hf"
 
     model = alex_net_cont_int_model.build_full_contour_integration_model(
         rf_size=35,
@@ -70,7 +73,7 @@ if __name__ == '__main__':
         class_names = pickle.load(f)
     word_to_class = {w: i for i, w in enumerate(class_names)}
 
-    with open('data/sample_images/data_key.pickle', 'rb') as handle:
+    with open(os.path.join(IMAGES_DIR, 'data_key.pickle'), 'rb') as handle:
         data_key = pickle.load(handle)
 
     fnames = sorted(data_key.keys())
@@ -80,7 +83,7 @@ if __name__ == '__main__':
     labels = []
 
     for fname, name in zip(fnames, names):
-        img = load_img(os.path.join("data/sample_images", fname), target_size=(227, 227))
+        img = load_img(os.path.join(IMAGES_DIR, fname), target_size=(227, 227))
         np_imgs = img_to_array(img, data_format='channels_first')
         images.append(np_imgs)
         labels.append([word_to_class[name]])
