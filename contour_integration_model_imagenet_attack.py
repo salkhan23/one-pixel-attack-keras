@@ -20,7 +20,7 @@ import helper
 from attack import PixelAttacker
 
 # IMAGES_DIR = './data/sample_images/'
-IMAGES_DIR = './data/sample_images_3/'
+IMAGES_DIR = './data/sample_images_4/'
 
 
 def preprocessing_function(x):
@@ -133,7 +133,7 @@ if __name__ == '__main__':
         models,
         samples=300,
         targeted=False,
-        pixels=[1],
+        pixels=[1, 3, 5],
         preprocessing_cb=preprocessing_function,
         info='_cont_int_model' + IMAGES_DIR.split('/')[-2]
     )

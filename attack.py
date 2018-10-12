@@ -138,8 +138,10 @@ class PixelAttacker:
             img_samples = np.random.choice(valid_imgs, samples)
 
             for pixel_count in pixels:
+
+                print("Starting {} pixel attack".format(pixel_count))
                 for i,img in enumerate(img_samples):
-                    print(model.name, '- image', img, '-', i+1, '/', len(img_samples))
+                    # print(model.name, '- image', img, '-', i+1, '/', len(img_samples))
                     targets = [None] if not targeted else range(10)
 
                     for target in targets:
@@ -150,6 +152,9 @@ class PixelAttacker:
                         result = self.attack(img, model, target, pixel_count,
                                         maxiter=maxiter, popsize=popsize,
                                         verbose=verbose, preprocessing_cb=preprocessing_cb)
+
+                        print(model.name, '- image', img, '-', i + 1, '/', len(img_samples), 'successful', result[5])
+
                         model_results.append(result)
 
             results += model_results
