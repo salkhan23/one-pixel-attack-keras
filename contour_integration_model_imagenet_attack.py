@@ -20,7 +20,7 @@ import helper
 from attack import PixelAttacker
 
 # IMAGES_DIR = './data/sample_images/'
-IMAGES_DIR = './data/sample_images_4/'
+IMAGES_DIR = './data/sample_images_5/'
 
 
 def preprocessing_function(x):
@@ -60,14 +60,15 @@ if __name__ == '__main__':
         if layer.name in do_not_train:
             layer.trainable = False
 
-    for layer in model.layers:
-        print("print {} is trainable {}".format(layer.name, layer.trainable))
+    # for layer in model.layers:
+    #     print("print {} is trainable {}".format(layer.name, layer.trainable))
 
     # model.summary()
 
     # -----------------------------------------------------------------------------------
     # Handle ImageNet
     # -----------------------------------------------------------------------------------
+    print("Loading Data from {}".format(IMAGES_DIR))
     # Class index to class name converter(class name is the word description)
     with open('data/imagenet_classes.pkl', 'rb') as f:
         class_names = pickle.load(f)
