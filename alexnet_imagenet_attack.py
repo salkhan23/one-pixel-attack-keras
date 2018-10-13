@@ -20,7 +20,7 @@ import helper
 from attack import PixelAttacker
 
 # IMAGES_DIR = './data/sample_images/'
-IMAGES_DIR = './data/sample_images_4/'
+IMAGES_DIR = './data/sample_images_2/'
 
 
 def preprocessing_function(x):
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     # -----------------------------------------------------------------------------------
     print("Loading model and weights ...")
 
-    weights_file = "./networks/models/partially_trained_alexnet_weights.hf"
+    weights_file = "./networks/models/trained_alexnet_weights.hf"
 
     model = alex_net.alex_net(weights_path=weights_file)
 
@@ -54,14 +54,16 @@ if __name__ == '__main__':
         if layer.name in do_not_train:
             layer.trainable = False
 
-    for layer in model.layers:
-        print("Layer {} is trainable {}".format(layer.name, layer.trainable))
+    # for layer in model.layers:
+    #     print("Layer {} is trainable {}".format(layer.name, layer.trainable))
 
     # model.summary()
 
     # -----------------------------------------------------------------------------------
     # Handle ImageNet
     # -----------------------------------------------------------------------------------
+    print("Loading Data from {}".format(IMAGES_DIR))
+
     # Class index to class name converter(class name is the word description)
     with open('data/imagenet_classes.pkl', 'rb') as f:
         class_names = pickle.load(f)
@@ -127,7 +129,7 @@ if __name__ == '__main__':
         models,
         samples=300,
         targeted=False,
-        pixels=[1, 3, 5],
+        pixels=[1],
         preprocessing_cb=preprocessing_function,
         info='_alexnet_' + IMAGES_DIR.split('/')[-2]
     )
