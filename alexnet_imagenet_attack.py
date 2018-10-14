@@ -129,7 +129,7 @@ if __name__ == '__main__':
         models,
         samples=300,
         targeted=False,
-        pixels=[1],
+        pixels=[1, 3, 5],
         preprocessing_cb=preprocessing_function,
         info='_alexnet_' + IMAGES_DIR.split('/')[-2]
     )
